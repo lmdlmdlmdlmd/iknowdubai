@@ -1,0 +1,20 @@
+@import "tailwindcss";
+
+@theme {
+  --font-archivo: 'Archivo Black', sans-serif;
+  --font-space: 'Space Mono', monospace;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.font-archivo {
+  font-family: var(--font-archivo);
+}
+
+.font-space {
+  font-family: var(--font-space);
+}
