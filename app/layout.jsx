@@ -1,4 +1,5 @@
 import "./globals.css";
+import PostHogProvider from "./posthog-provider";
 
 export const metadata = {
   title: "The Dubai Opinionist Test | Are You Qualified?",
@@ -46,7 +47,9 @@ export default function RootLayout({ children }) {
           rel="stylesheet"
         />
       </head>
-      <body>{children}</body>
+      <body>
+        <PostHogProvider>{children}</PostHogProvider>
+      </body>
     </html>
   );
 }

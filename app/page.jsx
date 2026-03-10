@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useRef } from "react";
-import html2canvas from "html2canvas";
+import { useState, useRef } from 'react';
+import html2canvas from 'html2canvas';
+import posthog from 'posthog-js';
 
 const questions = [
   {
@@ -13,7 +14,7 @@ const questions = [
       { text: "Once for a layover", points: 2 },
       { text: "Never but I read X", points: 0 },
       { text: "Does watching Dubai Bling count?", points: -5 },
-    ],
+    ]
   },
   {
     id: 2,
@@ -24,7 +25,7 @@ const questions = [
       { text: "CNN told me everyone's fleeing", points: 1 },
       { text: "A viral thread with 50k likes", points: -3 },
       { text: "My friend's cousin's WhatsApp group", points: -5 },
-    ],
+    ]
   },
   {
     id: 3,
@@ -35,7 +36,7 @@ const questions = [
       { text: "7000km+ but very concerned", points: -3 },
       { text: "What's a km? (I'm American)", points: -100, isAmerican: true },
       { text: "Idk but I have strong opinions", points: -10 },
-    ],
+    ]
   },
   {
     id: 4,
@@ -46,7 +47,7 @@ const questions = [
       { text: "International headlines", points: 2 },
       { text: "Vibes and speculation", points: -5 },
       { text: "A thread I didn't even finish reading", points: -10 },
-    ],
+    ]
   },
   {
     id: 5,
@@ -57,8 +58,8 @@ const questions = [
       { text: "They're coping/in denial", points: -3 },
       { text: "Doesn't matter, I saw a scary headline", points: -7 },
       { text: "They're clearly being paid to say that", points: -15 },
-    ],
-  },
+    ]
+  }
 ];
 
 const getResult = (percentage, isAmerican) => {
@@ -66,9 +67,9 @@ const getResult = (percentage, isAmerican) => {
     return {
       title: "Freedom of Speechoooor",
       message: "Sorry, your First Amendment rights don't apply here",
-      emoji: "\u{1F985}",
+      emoji: "🦅",
       scoreDisplay: "AMERICAN",
-      passed: false,
+      passed: false
     };
   }
 
@@ -76,39 +77,39 @@ const getResult = (percentage, isAmerican) => {
     return {
       title: "Earned Your Opinion",
       message: "You actually know wtf you're talking about",
-      emoji: "\u{1F3C6}",
+      emoji: "🏆",
       scoreDisplay: `${percentage}%`,
-      passed: true,
+      passed: true
     };
   } else if (percentage >= 50) {
     return {
       title: "Qualified-ish",
       message: "You've got some context, don't ruin it",
-      emoji: "\u26A0\uFE0F",
+      emoji: "⚠️",
       scoreDisplay: `${percentage}%`,
-      passed: false,
+      passed: false
     };
   } else if (percentage >= 20) {
     return {
       title: "Confidently Wrong",
       message: "The audacity is impressive, the accuracy isn't",
-      emoji: "\u{1F921}",
+      emoji: "🤡",
       scoreDisplay: `${percentage}%`,
-      passed: false,
+      passed: false
     };
   } else {
     return {
       title: "Certified Bullshitter",
       message: "Bro you're literally just making shit up",
-      emoji: "\u{1F4A9}",
+      emoji: "💩",
       scoreDisplay: `${percentage}%`,
-      passed: false,
+      passed: false
     };
   }
 };
 
 export default function DubaiQuiz() {
-  const [currentSection, setCurrentSection] = useState("hero");
+  const [currentSection, setCurrentSection] = useState('hero');
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState({});
   const [isAmerican, setIsAmerican] = useState(false);
@@ -122,13 +123,9 @@ export default function DubaiQuiz() {
   const isLastQuestion = currentQuestion === 4;
   const currentAnswered = answers[currentQuestion + 1] !== undefined;
 
-  const handleAnswer = (
-    questionId,
-    points,
-    optionIndex,
-    isAmericanOption = false
-  ) => {
-    setAnswers((prev) => ({ ...prev, [questionId]: { points, optionIndex } }));
+  const handleAnswer = (questionId, points, optionIndex, isAmericanOption = false) => {
+    posthog.capture('question_answered', { question_number: questionId, answer_index: optionIndex });
+    setAnswers(prev => ({ ...prev, [questionId]: { points, optionIndex } }));
     if (isAmericanOption) {
       setIsAmerican(true);
     } else if (questionId === 3) {
@@ -138,24 +135,23 @@ export default function DubaiQuiz() {
 
   const goNext = () => {
     if (!isLastQuestion) {
-      setCurrentQuestion((prev) => prev + 1);
+      setCurrentQuestion(prev => prev + 1);
     }
   };
 
   const goBack = () => {
     if (currentQuestion > 0) {
-      setCurrentQuestion((prev) => prev - 1);
+      setCurrentQuestion(prev => prev - 1);
     }
   };
 
   const calculateScore = () => {
-    const rawScore = Object.values(answers).reduce(
-      (sum, ans) => sum + ans.points,
-      0
-    );
+    const rawScore = Object.values(answers).reduce((sum, ans) => sum + ans.points, 0);
     const percentage = Math.max(0, Math.round((rawScore / 50) * 100));
+    const res = getResult(percentage, isAmerican);
+    posthog.capture('quiz_completed', { score: percentage, rating: res.title, is_american: isAmerican });
     setScore(percentage);
-    setCurrentSection("results");
+    setCurrentSection('results');
   };
 
   const resetQuiz = () => {
@@ -163,71 +159,99 @@ export default function DubaiQuiz() {
     setIsAmerican(false);
     setScore(0);
     setCurrentQuestion(0);
-    setCurrentSection("hero");
+    setCurrentSection('hero');
   };
 
   const result = getResult(score, isAmerican);
 
   const downloadCertificate = async () => {
+    posthog.capture('certificate_downloaded');
     setIsDownloading(true);
 
     try {
       if (certificateRef.current) {
         const canvas = await html2canvas(certificateRef.current, {
-          backgroundColor: "#F5EBD7",
+          backgroundColor: '#F5EBD7',
           scale: 2,
         });
 
-        const link = document.createElement("a");
-        link.download = "dubai-opinionist-results.jpg";
-        link.href = canvas.toDataURL("image/jpeg", 0.9);
+        const link = document.createElement('a');
+        link.download = 'dubai-opinionist-results.jpg';
+        link.href = canvas.toDataURL('image/jpeg', 0.9);
         link.click();
       }
     } catch (error) {
-      console.error("Download failed:", error);
-      alert("Download failed. Try taking a screenshot instead!");
+      console.error('Download failed:', error);
+      alert('Download failed. Try taking a screenshot instead!');
     }
 
     setIsDownloading(false);
   };
 
   const shareOnX = () => {
-    let tweetText = "";
+    posthog.capture('shared_on_x', { score, rating: result.title });
+    let tweetText = '';
 
     if (isAmerican) {
-      tweetText = `I scored AMERICAN on The Dubai Opinionist Test!\nRating: Freedom of Speechoooor \u{1F985}\nI don't know what a km is but I have opinions about Dubai.\nAre you qualified to post? Take the test: https://iknowdubai.lol`;
+      tweetText = `I scored AMERICAN on The Dubai Opinionist Test!\n\nRating: Freedom of Speechoooor 🦅\n\nI don't know what a km is but I have opinions about Dubai.\n\nAre you qualified to post? Take the test: iknowdubai.lol`;
     } else if (score >= 80) {
-      tweetText = `I scored ${score}% on The Dubai Opinionist Test!\nRating: Earned Your Opinion \u{1F3C6}\nI actually live here. I'm allowed to post.\nAre you qualified to post? Take the test: https://iknowdubai.lol`;
+      tweetText = `I scored ${score}% on The Dubai Opinionist Test!\n\nRating: Earned Your Opinion 🏆\n\nI actually live here. I'm allowed to post.\n\nAre you qualified to post? Take the test: iknowdubai.lol`;
     } else if (score >= 50) {
-      tweetText = `I scored ${score}% on The Dubai Opinionist Test!\nRating: Qualified-ish \u26A0\uFE0F\nMaybe I should post less and listen more.\nAre you qualified to post? Take the test: https://iknowdubai.lol`;
+      tweetText = `I scored ${score}% on The Dubai Opinionist Test!\n\nRating: Qualified-ish ⚠️\n\nMaybe I should post less and listen more.\n\nAre you qualified to post? Take the test: iknowdubai.lol`;
     } else if (score >= 20) {
-      tweetText = `I scored ${score}% on The Dubai Opinionist Test!\nRating: Confidently Wrong \u{1F921}\nI've been posting hot takes from 7000km away.\nAre you qualified to post? Take the test: https://iknowdubai.lol`;
+      tweetText = `I scored ${score}% on The Dubai Opinionist Test!\n\nRating: Confidently Wrong 🤡\n\nI've been posting hot takes from 7000km away.\n\nAre you qualified to post? Take the test: iknowdubai.lol`;
     } else {
-      tweetText = `I scored ${score}% on The Dubai Opinionist Test!\nRating: Certified Bullshitter \u{1F4A9}\nI get my Dubai news from WhatsApp forwards.\nAre you qualified to post? Take the test: https://iknowdubai.lol`;
+      tweetText = `I scored ${score}% on The Dubai Opinionist Test!\n\nRating: Certified Bullshitter 💩\n\nI get my Dubai news from WhatsApp forwards.\n\nAre you qualified to post? Take the test: iknowdubai.lol`;
     }
 
     const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`;
-    window.open(tweetUrl, "_blank");
+    window.open(tweetUrl, '_blank');
   };
 
-  const today = new Date()
-    .toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    })
-    .toUpperCase();
+  const today = new Date().toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  }).toUpperCase();
 
   const currentQ = questions[currentQuestion];
 
-  const certificateTitle = result.passed
-    ? "CERTIFIED DUBAI OPINIONIST"
-    : "THE DUBAI OPINIONIST TEST";
+  // Dynamic certificate title
+  const certificateTitle = result.passed ? "CERTIFIED DUBAI OPINIONIST" : "THE DUBAI OPINIONIST TEST";
+
+  const Logo = () => (
+    <a
+      href="/"
+      onClick={(e) => { e.preventDefault(); resetQuiz(); }}
+      className="font-archivo"
+      style={{
+        color: '#1A0F08',
+        fontSize: '18px',
+        textDecoration: 'none',
+        textTransform: 'lowercase',
+        letterSpacing: '-0.01em',
+        position: 'relative',
+        zIndex: 20,
+      }}
+    >
+      iknowdubai.lol
+    </a>
+  );
 
   return (
     <>
+      <style>{`
+        .font-archivo {
+          font-family: 'Archivo Black', sans-serif;
+        }
+
+        .font-space {
+          font-family: 'Space Mono', monospace;
+        }
+      `}</style>
+
       {/* HERO SECTION */}
-      {currentSection === "hero" && (
+      {currentSection === 'hero' && (
         <div
           className="min-h-screen flex flex-col items-center justify-center px-6 py-12 relative overflow-hidden"
           style={{
@@ -240,6 +264,11 @@ export default function DubaiQuiz() {
             )`,
           }}
         >
+          {/* Logo */}
+          <div className="absolute top-6 left-0 w-full flex justify-center" style={{ zIndex: 20 }}>
+            <Logo />
+          </div>
+
           {/* Noise texture overlay */}
           <div
             className="absolute inset-0 pointer-events-none"
@@ -252,7 +281,7 @@ export default function DubaiQuiz() {
           {/* Geometric Desert Dunes */}
           <svg
             className="absolute bottom-0 left-0 w-full"
-            style={{ height: "30%", minHeight: "180px" }}
+            style={{ height: '30%', minHeight: '180px' }}
             viewBox="0 0 1440 400"
             preserveAspectRatio="none"
           >
@@ -276,7 +305,7 @@ export default function DubaiQuiz() {
           {/* Dubai Skyline */}
           <svg
             className="absolute bottom-0 left-0 w-full"
-            style={{ height: "28%", minHeight: "170px" }}
+            style={{ height: '28%', minHeight: '170px' }}
             viewBox="0 0 1440 300"
             preserveAspectRatio="xMidYMax slice"
           >
@@ -328,18 +357,17 @@ export default function DubaiQuiz() {
             </g>
           </svg>
 
-          {/* Geometric Sun */}
+          {/* Geometric Sun - high up, centered */}
           <div
             className="absolute"
             style={{
-              top: "15%",
-              left: "50%",
-              transform: "translateX(-50%)",
-              width: "clamp(100px, 15vw, 160px)",
-              height: "clamp(100px, 15vw, 160px)",
-              borderRadius: "50%",
-              background:
-                "radial-gradient(circle, #F7A834 0%, #E88B2E 50%, #D4752A 100%)",
+              top: '15%',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              width: 'clamp(100px, 15vw, 160px)',
+              height: 'clamp(100px, 15vw, 160px)',
+              borderRadius: '50%',
+              background: 'radial-gradient(circle, #F7A834 0%, #E88B2E 50%, #D4752A 100%)',
               opacity: 0.7,
             }}
           />
@@ -349,55 +377,49 @@ export default function DubaiQuiz() {
             <h1
               className="font-archivo text-center mb-6"
               style={{
-                color: "#1A0F08",
-                fontSize: "clamp(2rem, 8vw, 5.5rem)",
+                color: '#1A0F08',
+                fontSize: 'clamp(2rem, 8vw, 5.5rem)',
                 lineHeight: 0.95,
-                letterSpacing: "-0.02em",
-                textTransform: "uppercase",
-                textShadow: "3px 3px 0 rgba(212, 175, 55, 0.2)",
+                letterSpacing: '-0.02em',
+                textTransform: 'uppercase',
+                textShadow: '3px 3px 0 rgba(212, 175, 55, 0.2)',
               }}
             >
-              ARE YOU A
-              <br />
-              CERTIFIED DUBAI
-              <br />
+              ARE YOU A<br />
+              CERTIFIED DUBAI<br />
               OPINIONIST?
             </h1>
 
             <p
               className="font-space text-center mb-10"
               style={{
-                color: "#2A1810",
-                fontSize: "clamp(1rem, 2.8vw, 1.4rem)",
+                color: '#2A1810',
+                fontSize: 'clamp(1rem, 2.8vw, 1.4rem)',
                 fontWeight: 700,
               }}
             >
-              Prove you&apos;re qualified to have an opinion about Dubai
+              Prove you&#39;re qualified to have an opinion about Dubai
             </p>
 
             <button
-              onMouseEnter={() => setHoveredButton("start")}
+              onMouseEnter={() => setHoveredButton('start')}
               onMouseLeave={() => setHoveredButton(null)}
-              onClick={() => setCurrentSection("quiz")}
+              onClick={() => { posthog.capture('quiz_started'); setCurrentSection('quiz'); }}
               className="font-space mb-5"
               style={{
-                backgroundColor: "#7CB3BD",
-                color: "#1A0F08",
-                padding: "20px 52px",
-                fontSize: "15px",
+                backgroundColor: '#7CB3BD',
+                color: '#1A0F08',
+                padding: '20px 52px',
+                fontSize: '15px',
                 fontWeight: 700,
-                letterSpacing: "0.1em",
-                textTransform: "uppercase",
-                border: "4px solid #2A1810",
+                letterSpacing: '0.1em',
+                textTransform: 'uppercase',
+                border: '4px solid #2A1810',
                 borderRadius: 0,
-                cursor: "pointer",
-                transform:
-                  hoveredButton === "start"
-                    ? "translate(-4px, -4px)"
-                    : "translate(0, 0)",
-                boxShadow:
-                  hoveredButton === "start" ? "4px 4px 0 #2A1810" : "none",
-                transition: "none",
+                cursor: 'pointer',
+                transform: hoveredButton === 'start' ? 'translate(-4px, -4px)' : 'translate(0, 0)',
+                boxShadow: hoveredButton === 'start' ? '4px 4px 0 #2A1810' : 'none',
+                transition: 'none',
               }}
             >
               START TEST
@@ -406,20 +428,21 @@ export default function DubaiQuiz() {
             <p
               className="font-space"
               style={{
-                color: "#2A1810",
-                fontSize: "13px",
+                color: '#2A1810',
+                fontSize: '13px',
                 fontWeight: 700,
-                letterSpacing: "0.06em",
+                letterSpacing: '0.06em',
               }}
             >
-              {"\u23F1"} 3 MIN {"\u00B7"} HONESTY REQUIRED
+              ⏱ 3 MIN · HONESTY REQUIRED
             </p>
           </div>
-        </div>
+
+                  </div>
       )}
 
       {/* QUIZ SECTION */}
-      {currentSection === "quiz" && (
+      {currentSection === 'quiz' && (
         <div
           className="min-h-screen flex flex-col items-center justify-center px-6 py-12 relative"
           style={{
@@ -433,8 +456,13 @@ export default function DubaiQuiz() {
           {/* Gold accent bar */}
           <div
             className="absolute top-0 left-0 w-full"
-            style={{ height: "6px", backgroundColor: "#D4AF37" }}
+            style={{ height: '6px', backgroundColor: '#D4AF37' }}
           />
+
+          {/* Logo */}
+          <div className="absolute top-5 left-0 w-full flex justify-center" style={{ zIndex: 20 }}>
+            <Logo />
+          </div>
 
           <div className="max-w-xl w-full">
             {/* Progress dots */}
@@ -443,15 +471,14 @@ export default function DubaiQuiz() {
                 <div
                   key={index}
                   style={{
-                    width: "12px",
-                    height: "12px",
-                    backgroundColor:
-                      index === currentQuestion
-                        ? "#2A1810"
-                        : answers[index + 1]
-                          ? "#7CB3BD"
-                          : "transparent",
-                    border: "2px solid #2A1810",
+                    width: '12px',
+                    height: '12px',
+                    backgroundColor: index === currentQuestion
+                      ? '#2A1810'
+                      : answers[index + 1]
+                        ? '#7CB3BD'
+                        : 'transparent',
+                    border: '2px solid #2A1810',
                   }}
                 />
               ))}
@@ -460,18 +487,18 @@ export default function DubaiQuiz() {
             {/* Question Card */}
             <div
               style={{
-                backgroundColor: "#F5EBD7",
-                border: "4px solid #2A1810",
-                padding: "32px 28px",
+                backgroundColor: '#F5EBD7',
+                border: '4px solid #2A1810',
+                padding: '32px 28px',
               }}
             >
               <p
                 className="font-space mb-4"
                 style={{
-                  color: "#2A1810",
-                  fontSize: "12px",
+                  color: '#2A1810',
+                  fontSize: '12px',
                   fontWeight: 700,
-                  letterSpacing: "0.1em",
+                  letterSpacing: '0.1em',
                 }}
               >
                 QUESTION {currentQuestion + 1} OF 5
@@ -480,9 +507,9 @@ export default function DubaiQuiz() {
               <h3
                 className="font-archivo mb-8"
                 style={{
-                  color: "#1A0F08",
-                  fontSize: "clamp(1.2rem, 4vw, 1.6rem)",
-                  textTransform: "uppercase",
+                  color: '#1A0F08',
+                  fontSize: 'clamp(1.2rem, 4vw, 1.6rem)',
+                  textTransform: 'uppercase',
                   lineHeight: 1.1,
                 }}
               >
@@ -491,49 +518,28 @@ export default function DubaiQuiz() {
 
               <div className="flex flex-col gap-3">
                 {currentQ.options.map((option, optIndex) => {
-                  const isSelected =
-                    answers[currentQ.id]?.optionIndex === optIndex;
-                  const isHovered =
-                    hoveredOption === `${currentQ.id}-${optIndex}`;
+                  const isSelected = answers[currentQ.id]?.optionIndex === optIndex;
+                  const isHovered = hoveredOption === `${currentQ.id}-${optIndex}`;
 
                   return (
                     <button
                       key={optIndex}
-                      onClick={() =>
-                        handleAnswer(
-                          currentQ.id,
-                          option.points,
-                          optIndex,
-                          option.isAmerican
-                        )
-                      }
-                      onMouseEnter={() =>
-                        setHoveredOption(`${currentQ.id}-${optIndex}`)
-                      }
+                      onClick={() => handleAnswer(currentQ.id, option.points, optIndex, option.isAmerican)}
+                      onMouseEnter={() => setHoveredOption(`${currentQ.id}-${optIndex}`)}
                       onMouseLeave={() => setHoveredOption(null)}
                       className="font-space text-left"
                       style={{
-                        backgroundColor: isSelected
-                          ? "#7CB3BD"
-                          : isHovered
-                            ? "#D9C4A8"
-                            : "transparent",
-                        color: "#1A0F08",
-                        padding: "16px 20px",
-                        fontSize: "14px",
+                        backgroundColor: isSelected ? '#7CB3BD' : isHovered ? '#D9C4A8' : 'transparent',
+                        color: '#1A0F08',
+                        padding: '16px 20px',
+                        fontSize: '14px',
                         fontWeight: 700,
-                        border: "3px solid #2A1810",
+                        border: '3px solid #2A1810',
                         borderRadius: 0,
-                        cursor: "pointer",
-                        transform:
-                          isHovered && !isSelected
-                            ? "translate(-2px, -2px)"
-                            : "translate(0, 0)",
-                        boxShadow:
-                          isHovered && !isSelected
-                            ? "2px 2px 0 #2A1810"
-                            : "none",
-                        transition: "none",
+                        cursor: 'pointer',
+                        transform: isHovered && !isSelected ? 'translate(-2px, -2px)' : 'translate(0, 0)',
+                        boxShadow: isHovered && !isSelected ? '2px 2px 0 #2A1810' : 'none',
+                        transition: 'none',
                       }}
                     >
                       {option.text}
@@ -545,99 +551,85 @@ export default function DubaiQuiz() {
 
             {/* Navigation */}
             <div className="flex justify-between mt-6">
+              {/* Back button - only show from question 2 onwards */}
               {currentQuestion > 0 ? (
                 <button
-                  onMouseEnter={() => setHoveredButton("back")}
+                  onMouseEnter={() => setHoveredButton('back')}
                   onMouseLeave={() => setHoveredButton(null)}
                   onClick={goBack}
                   className="font-space"
                   style={{
-                    backgroundColor: "transparent",
-                    color: "#1A0F08",
-                    padding: "16px 28px",
-                    fontSize: "14px",
+                    backgroundColor: 'transparent',
+                    color: '#1A0F08',
+                    padding: '16px 28px',
+                    fontSize: '14px',
                     fontWeight: 700,
-                    letterSpacing: "0.08em",
-                    textTransform: "uppercase",
-                    border: "3px solid #2A1810",
+                    letterSpacing: '0.08em',
+                    textTransform: 'uppercase',
+                    border: '3px solid #2A1810',
                     borderRadius: 0,
-                    cursor: "pointer",
-                    transform:
-                      hoveredButton === "back"
-                        ? "translate(-3px, -3px)"
-                        : "translate(0, 0)",
-                    boxShadow:
-                      hoveredButton === "back" ? "3px 3px 0 #2A1810" : "none",
-                    transition: "none",
+                    cursor: 'pointer',
+                    transform: hoveredButton === 'back' ? 'translate(-3px, -3px)' : 'translate(0, 0)',
+                    boxShadow: hoveredButton === 'back' ? '3px 3px 0 #2A1810' : 'none',
+                    transition: 'none',
                   }}
                 >
-                  {"\u2190"} BACK
+                  ← BACK
                 </button>
               ) : (
                 <div />
               )}
 
+              {/* Continue / See Results button */}
               {isLastQuestion && allAnswered ? (
                 <button
-                  onMouseEnter={() => setHoveredButton("results")}
+                  onMouseEnter={() => setHoveredButton('results')}
                   onMouseLeave={() => setHoveredButton(null)}
                   onClick={calculateScore}
                   className="font-space"
                   style={{
-                    backgroundColor: "#D4AF37",
-                    color: "#1A0F08",
-                    padding: "16px 28px",
-                    fontSize: "14px",
+                    backgroundColor: '#D4AF37',
+                    color: '#1A0F08',
+                    padding: '16px 28px',
+                    fontSize: '14px',
                     fontWeight: 700,
-                    letterSpacing: "0.08em",
-                    textTransform: "uppercase",
-                    border: "3px solid #2A1810",
+                    letterSpacing: '0.08em',
+                    textTransform: 'uppercase',
+                    border: '3px solid #2A1810',
                     borderRadius: 0,
-                    cursor: "pointer",
-                    transform:
-                      hoveredButton === "results"
-                        ? "translate(-3px, -3px)"
-                        : "translate(0, 0)",
-                    boxShadow:
-                      hoveredButton === "results"
-                        ? "3px 3px 0 #2A1810"
-                        : "none",
-                    transition: "none",
+                    cursor: 'pointer',
+                    transform: hoveredButton === 'results' ? 'translate(-3px, -3px)' : 'translate(0, 0)',
+                    boxShadow: hoveredButton === 'results' ? '3px 3px 0 #2A1810' : 'none',
+                    transition: 'none',
                   }}
                 >
-                  SEE RESULTS {"\u2192"}
+                  SEE RESULTS →
                 </button>
               ) : (
                 <button
-                  onMouseEnter={() => setHoveredButton("continue")}
+                  onMouseEnter={() => setHoveredButton('continue')}
                   onMouseLeave={() => setHoveredButton(null)}
                   onClick={goNext}
                   disabled={!currentAnswered}
                   className="font-space"
                   style={{
-                    backgroundColor: currentAnswered ? "#7CB3BD" : "#CCCCCC",
-                    color: currentAnswered ? "#1A0F08" : "#888888",
-                    padding: "16px 28px",
-                    fontSize: "14px",
+                    backgroundColor: currentAnswered ? '#7CB3BD' : '#CCCCCC',
+                    color: currentAnswered ? '#1A0F08' : '#888888',
+                    padding: '16px 28px',
+                    fontSize: '14px',
                     fontWeight: 700,
-                    letterSpacing: "0.08em",
-                    textTransform: "uppercase",
-                    border: "3px solid",
-                    borderColor: currentAnswered ? "#2A1810" : "#999999",
+                    letterSpacing: '0.08em',
+                    textTransform: 'uppercase',
+                    border: '3px solid',
+                    borderColor: currentAnswered ? '#2A1810' : '#999999',
                     borderRadius: 0,
-                    cursor: currentAnswered ? "pointer" : "not-allowed",
-                    transform:
-                      hoveredButton === "continue" && currentAnswered
-                        ? "translate(-3px, -3px)"
-                        : "translate(0, 0)",
-                    boxShadow:
-                      hoveredButton === "continue" && currentAnswered
-                        ? "3px 3px 0 #2A1810"
-                        : "none",
-                    transition: "none",
+                    cursor: currentAnswered ? 'pointer' : 'not-allowed',
+                    transform: hoveredButton === 'continue' && currentAnswered ? 'translate(-3px, -3px)' : 'translate(0, 0)',
+                    boxShadow: hoveredButton === 'continue' && currentAnswered ? '3px 3px 0 #2A1810' : 'none',
+                    transition: 'none',
                   }}
                 >
-                  CONTINUE {"\u2192"}
+                  CONTINUE →
                 </button>
               )}
             </div>
@@ -646,7 +638,7 @@ export default function DubaiQuiz() {
       )}
 
       {/* RESULTS SECTION */}
-      {currentSection === "results" && (
+      {currentSection === 'results' && (
         <div
           className="min-h-screen flex flex-col items-center justify-center px-6 py-12"
           style={{
@@ -660,27 +652,40 @@ export default function DubaiQuiz() {
           {/* Gold accent bar */}
           <div
             className="absolute top-0 left-0 w-full"
-            style={{ height: "6px", backgroundColor: "#D4AF37" }}
+            style={{ height: '6px', backgroundColor: '#D4AF37' }}
           />
+
+          {/* Logo */}
+          <div className="absolute top-5 left-0 w-full flex justify-center" style={{ zIndex: 20 }}>
+            <Logo />
+          </div>
 
           <div className="max-w-xl w-full">
             {/* Certificate */}
             <div
               ref={certificateRef}
               style={{
-                backgroundColor: "#F5EBD7",
-                border: "6px solid #2A1810",
-                padding: "40px 32px",
-                textAlign: "center",
+                backgroundColor: '#F5EBD7',
+                border: '6px solid #2A1810',
+                padding: '40px 32px',
+                textAlign: 'center',
+                aspectRatio: '1 / 1',
+                maxWidth: '1000px',
+                width: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
               }}
             >
               <p
-                className="font-space mb-2"
+                className="font-space"
                 style={{
-                  color: "#2A1810",
-                  fontSize: "12px",
+                  color: '#2A1810',
+                  fontSize: '12px',
                   fontWeight: 700,
-                  letterSpacing: "0.2em",
+                  letterSpacing: '0.2em',
+                  marginBottom: '8px',
                 }}
               >
                 CERTIFICATE
@@ -688,43 +693,47 @@ export default function DubaiQuiz() {
 
               <div
                 style={{
-                  width: "140px",
-                  height: "2px",
-                  backgroundColor: "#D4AF37",
-                  margin: "0 auto 24px",
+                  width: '140px',
+                  height: '2px',
+                  backgroundColor: '#D4AF37',
+                  marginBottom: '24px',
                 }}
               />
 
               <h2
-                className="font-archivo mb-6"
+                className="font-archivo"
                 style={{
-                  color: "#1A0F08",
-                  fontSize: "clamp(1.2rem, 4vw, 1.8rem)",
-                  letterSpacing: "-0.01em",
-                  textTransform: "uppercase",
+                  color: '#1A0F08',
+                  fontSize: 'clamp(1.2rem, 4vw, 1.8rem)',
+                  letterSpacing: '-0.01em',
+                  textTransform: 'uppercase',
+                  marginBottom: '24px',
                 }}
               >
                 {certificateTitle}
               </h2>
 
               <p
-                className="font-space mb-2"
+                className="font-space"
                 style={{
-                  color: "#2A1810",
-                  fontSize: "11px",
+                  color: '#2A1810',
+                  fontSize: '11px',
                   fontWeight: 700,
-                  letterSpacing: "0.15em",
+                  letterSpacing: '0.15em',
+                  marginBottom: '2px',
                 }}
               >
                 SCORE ACHIEVED
               </p>
 
               <p
-                className="font-archivo mb-2"
+                className="font-archivo"
                 style={{
-                  color: "#1A0F08",
-                  fontSize: "clamp(3rem, 10vw, 5rem)",
+                  color: '#1A0F08',
+                  fontSize: 'clamp(3rem, 10vw, 5rem)',
                   lineHeight: 1,
+                  marginTop: '-10px',
+                  marginBottom: '32px',
                 }}
               >
                 {result.scoreDisplay}
@@ -732,51 +741,56 @@ export default function DubaiQuiz() {
 
               {isAmerican && (
                 <p
-                  className="font-space mb-4"
+                  className="font-space"
                   style={{
-                    color: "#2A1810",
-                    fontSize: "20px",
+                    color: '#2A1810',
+                    fontSize: '20px',
                     fontWeight: 700,
+                    marginBottom: '16px',
                   }}
                 >
                   0%
                 </p>
               )}
 
-              <p style={{ fontSize: "48px", marginBottom: "16px" }}>
+              <p style={{ fontSize: '48px', marginTop: '-10px', marginBottom: '16px' }}>
                 {result.emoji}
               </p>
 
               <p
-                className="font-space mb-2"
+                className="font-space"
                 style={{
-                  color: "#2A1810",
-                  fontSize: "11px",
+                  color: '#2A1810',
+                  fontSize: '11px',
                   fontWeight: 700,
-                  letterSpacing: "0.15em",
+                  letterSpacing: '0.15em',
+                  marginBottom: '2px',
                 }}
               >
                 RATING
               </p>
 
               <h3
-                className="font-archivo mb-4"
+                className="font-archivo"
                 style={{
-                  color: "#1A0F08",
-                  fontSize: "clamp(1.8rem, 6vw, 3rem)",
-                  textTransform: "uppercase",
+                  color: '#1A0F08',
+                  fontSize: 'clamp(1.8rem, 6vw, 3rem)',
+                  textTransform: 'uppercase',
                   lineHeight: 1.05,
+                  marginTop: '-8px',
+                  marginBottom: '16px',
                 }}
               >
                 {result.title}
               </h3>
 
               <p
-                className="font-space mb-8"
+                className="font-space"
                 style={{
-                  color: "#2A1810",
-                  fontSize: "14px",
+                  color: '#2A1810',
+                  fontSize: '14px',
                   fontWeight: 700,
+                  marginBottom: '32px',
                 }}
               >
                 {result.message}
@@ -784,110 +798,96 @@ export default function DubaiQuiz() {
 
               <div
                 style={{
-                  width: "100%",
-                  height: "2px",
-                  backgroundColor: "#2A1810",
-                  margin: "0 auto 16px",
+                  width: '100%',
+                  height: '2px',
+                  backgroundColor: '#2A1810',
+                  margin: '0 auto 16px',
                 }}
               />
 
               <p
                 className="font-space"
                 style={{
-                  color: "#2A1810",
-                  fontSize: "10px",
+                  color: '#2A1810',
+                  fontSize: '10px',
                   fontWeight: 700,
-                  letterSpacing: "0.1em",
+                  letterSpacing: '0.1em',
                 }}
               >
-                ISSUED {today} {"\u00B7"} DUBAI, UAE
+                ISSUED {today} · DUBAI, UAE
               </p>
             </div>
 
             {/* Buttons */}
             <div className="flex flex-col gap-4 mt-8">
               <button
-                onMouseEnter={() => setHoveredButton("download")}
+                onMouseEnter={() => setHoveredButton('download')}
                 onMouseLeave={() => setHoveredButton(null)}
                 onClick={downloadCertificate}
                 disabled={isDownloading}
                 className="font-space w-full"
                 style={{
-                  backgroundColor: "#7CB3BD",
-                  color: "#1A0F08",
-                  padding: "20px 52px",
-                  fontSize: "15px",
+                  backgroundColor: '#7CB3BD',
+                  color: '#1A0F08',
+                  padding: '20px 52px',
+                  fontSize: '15px',
                   fontWeight: 700,
-                  letterSpacing: "0.1em",
-                  textTransform: "uppercase",
-                  border: "4px solid #2A1810",
+                  letterSpacing: '0.1em',
+                  textTransform: 'uppercase',
+                  border: '4px solid #2A1810',
                   borderRadius: 0,
-                  cursor: isDownloading ? "wait" : "pointer",
-                  transform:
-                    hoveredButton === "download" && !isDownloading
-                      ? "translate(-4px, -4px)"
-                      : "translate(0, 0)",
-                  boxShadow:
-                    hoveredButton === "download" && !isDownloading
-                      ? "4px 4px 0 #2A1810"
-                      : "none",
-                  transition: "none",
+                  cursor: isDownloading ? 'wait' : 'pointer',
+                  transform: hoveredButton === 'download' && !isDownloading ? 'translate(-4px, -4px)' : 'translate(0, 0)',
+                  boxShadow: hoveredButton === 'download' && !isDownloading ? '4px 4px 0 #2A1810' : 'none',
+                  transition: 'none',
                 }}
               >
-                {isDownloading ? "PREPARING..." : "DOWNLOAD RESULTS"}
+                {isDownloading ? 'PREPARING...' : 'DOWNLOAD CERTIFICATE'}
               </button>
 
               <button
-                onMouseEnter={() => setHoveredButton("share")}
+                onMouseEnter={() => setHoveredButton('share')}
                 onMouseLeave={() => setHoveredButton(null)}
                 onClick={shareOnX}
                 className="font-space w-full"
                 style={{
-                  backgroundColor: "#1A0F08",
-                  color: "#F5EBD7",
-                  padding: "20px 52px",
-                  fontSize: "15px",
+                  backgroundColor: '#1A0F08',
+                  color: '#F5EBD7',
+                  padding: '20px 52px',
+                  fontSize: '15px',
                   fontWeight: 700,
-                  letterSpacing: "0.1em",
-                  textTransform: "uppercase",
-                  border: "4px solid #2A1810",
+                  letterSpacing: '0.1em',
+                  textTransform: 'uppercase',
+                  border: '4px solid #2A1810',
                   borderRadius: 0,
-                  cursor: "pointer",
-                  transform:
-                    hoveredButton === "share"
-                      ? "translate(-4px, -4px)"
-                      : "translate(0, 0)",
-                  boxShadow:
-                    hoveredButton === "share" ? "4px 4px 0 #2A1810" : "none",
-                  transition: "none",
+                  cursor: 'pointer',
+                  transform: hoveredButton === 'share' ? 'translate(-4px, -4px)' : 'translate(0, 0)',
+                  boxShadow: hoveredButton === 'share' ? '4px 4px 0 #2A1810' : 'none',
+                  transition: 'none',
                 }}
               >
                 SHARE ON X
               </button>
 
               <button
-                onMouseEnter={() => setHoveredButton("retake")}
+                onMouseEnter={() => setHoveredButton('retake')}
                 onMouseLeave={() => setHoveredButton(null)}
                 onClick={resetQuiz}
                 className="font-space w-full"
                 style={{
-                  backgroundColor: "transparent",
-                  color: "#1A0F08",
-                  padding: "20px 52px",
-                  fontSize: "15px",
+                  backgroundColor: 'transparent',
+                  color: '#1A0F08',
+                  padding: '20px 52px',
+                  fontSize: '15px',
                   fontWeight: 700,
-                  letterSpacing: "0.1em",
-                  textTransform: "uppercase",
-                  border: "4px solid #2A1810",
+                  letterSpacing: '0.1em',
+                  textTransform: 'uppercase',
+                  border: '4px solid #2A1810',
                   borderRadius: 0,
-                  cursor: "pointer",
-                  transform:
-                    hoveredButton === "retake"
-                      ? "translate(-4px, -4px)"
-                      : "translate(0, 0)",
-                  boxShadow:
-                    hoveredButton === "retake" ? "4px 4px 0 #2A1810" : "none",
-                  transition: "none",
+                  cursor: 'pointer',
+                  transform: hoveredButton === 'retake' ? 'translate(-4px, -4px)' : 'translate(0, 0)',
+                  boxShadow: hoveredButton === 'retake' ? '4px 4px 0 #2A1810' : 'none',
+                  transition: 'none',
                 }}
               >
                 RETAKE TEST
