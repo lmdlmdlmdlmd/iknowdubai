@@ -444,7 +444,7 @@ export default function DubaiQuiz() {
       {/* QUIZ SECTION */}
       {currentSection === 'quiz' && (
         <div
-          className="min-h-screen flex flex-col items-center justify-center px-6 py-12 relative"
+          className="min-h-screen flex flex-col items-center justify-start sm:justify-center px-6 pt-[60px] sm:pt-12 pb-6 sm:pb-12 relative"
           style={{
             background: `linear-gradient(180deg,
               #F5EBD7 0%,
@@ -531,7 +531,7 @@ export default function DubaiQuiz() {
                       style={{
                         backgroundColor: isSelected ? '#7CB3BD' : isHovered ? '#D9C4A8' : 'transparent',
                         color: '#1A0F08',
-                        padding: '16px 20px',
+                        padding: '12px 16px',
                         fontSize: '14px',
                         fontWeight: 700,
                         border: '3px solid #2A1810',
@@ -640,7 +640,7 @@ export default function DubaiQuiz() {
       {/* RESULTS SECTION */}
       {currentSection === 'results' && (
         <div
-          className="min-h-screen flex flex-col items-center justify-center px-6 py-12"
+          className="min-h-screen flex flex-col items-center justify-center px-6 pt-14 pb-6"
           style={{
             background: `linear-gradient(180deg,
               #F5EBD7 0%,
@@ -667,9 +667,8 @@ export default function DubaiQuiz() {
               style={{
                 backgroundColor: '#F5EBD7',
                 border: '6px solid #2A1810',
-                padding: '40px 32px',
+                padding: '28px 24px',
                 textAlign: 'center',
-                aspectRatio: '1 / 1',
                 maxWidth: '1000px',
                 width: '100%',
                 display: 'flex',
@@ -696,7 +695,7 @@ export default function DubaiQuiz() {
                   width: '140px',
                   height: '2px',
                   backgroundColor: '#D4AF37',
-                  marginBottom: '24px',
+                  marginBottom: '16px',
                 }}
               />
 
@@ -707,7 +706,8 @@ export default function DubaiQuiz() {
                   fontSize: 'clamp(1.2rem, 4vw, 1.8rem)',
                   letterSpacing: '-0.01em',
                   textTransform: 'uppercase',
-                  marginBottom: '24px',
+                  lineHeight: 1,
+                  marginBottom: '16px',
                 }}
               >
                 {certificateTitle}
@@ -720,7 +720,7 @@ export default function DubaiQuiz() {
                   fontSize: '11px',
                   fontWeight: 700,
                   letterSpacing: '0.15em',
-                  marginBottom: '2px',
+                  marginBottom: '8px',
                 }}
               >
                 SCORE ACHIEVED
@@ -733,7 +733,7 @@ export default function DubaiQuiz() {
                   fontSize: 'clamp(3rem, 10vw, 5rem)',
                   lineHeight: 1,
                   marginTop: '-10px',
-                  marginBottom: '32px',
+                  marginBottom: '20px',
                 }}
               >
                 {result.scoreDisplay}
@@ -764,7 +764,7 @@ export default function DubaiQuiz() {
                   fontSize: '11px',
                   fontWeight: 700,
                   letterSpacing: '0.15em',
-                  marginBottom: '2px',
+                  marginBottom: '8px',
                 }}
               >
                 RATING
@@ -776,7 +776,7 @@ export default function DubaiQuiz() {
                   color: '#1A0F08',
                   fontSize: 'clamp(1.8rem, 6vw, 3rem)',
                   textTransform: 'uppercase',
-                  lineHeight: 1.05,
+                  lineHeight: 0.95,
                   marginTop: '-8px',
                   marginBottom: '16px',
                 }}
@@ -790,7 +790,7 @@ export default function DubaiQuiz() {
                   color: '#2A1810',
                   fontSize: '14px',
                   fontWeight: 700,
-                  marginBottom: '32px',
+                  marginBottom: '20px',
                 }}
               >
                 {result.message}
@@ -819,7 +819,7 @@ export default function DubaiQuiz() {
             </div>
 
             {/* Buttons */}
-            <div className="flex flex-col gap-4 mt-8">
+            <div className="flex flex-col gap-3 mt-4">
               <button
                 onMouseEnter={() => setHoveredButton('download')}
                 onMouseLeave={() => setHoveredButton(null)}
@@ -829,8 +829,8 @@ export default function DubaiQuiz() {
                 style={{
                   backgroundColor: '#7CB3BD',
                   color: '#1A0F08',
-                  padding: '20px 52px',
-                  fontSize: '15px',
+                  padding: '14px 40px',
+                  fontSize: '14px',
                   fontWeight: 700,
                   letterSpacing: '0.1em',
                   textTransform: 'uppercase',
@@ -853,8 +853,8 @@ export default function DubaiQuiz() {
                 style={{
                   backgroundColor: '#1A0F08',
                   color: '#F5EBD7',
-                  padding: '20px 52px',
-                  fontSize: '15px',
+                  padding: '14px 40px',
+                  fontSize: '14px',
                   fontWeight: 700,
                   letterSpacing: '0.1em',
                   textTransform: 'uppercase',
@@ -877,8 +877,8 @@ export default function DubaiQuiz() {
                 style={{
                   backgroundColor: 'transparent',
                   color: '#1A0F08',
-                  padding: '20px 52px',
-                  fontSize: '15px',
+                  padding: '14px 40px',
+                  fontSize: '14px',
                   fontWeight: 700,
                   letterSpacing: '0.1em',
                   textTransform: 'uppercase',
