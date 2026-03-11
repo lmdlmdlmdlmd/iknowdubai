@@ -357,7 +357,7 @@ export default function DubaiQuiz() {
           />
 
           {/* Logo */}
-          <div className="absolute top-6 left-0 w-full flex justify-center" style={{ zIndex: 20 }}>
+          <div className="absolute top-5 left-0 w-full flex justify-center" style={{ zIndex: 20 }}>
             <Logo />
           </div>
 
