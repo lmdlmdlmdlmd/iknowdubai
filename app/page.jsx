@@ -9,7 +9,7 @@ const questions = [
     id: 1,
     question: "How many times have you been to Dubai?",
     options: [
-      { text: "I literally live here", points: 10 },
+      { text: "I live here", points: 10 },
       { text: "Multiple times, I know the vibe", points: 7 },
       { text: "Once for a layover", points: 2 },
       { text: "Never but I read X", points: 0 },
@@ -20,7 +20,7 @@ const questions = [
     id: 2,
     question: "Where do you get your Dubai news?",
     options: [
-      { text: "I'm literally here, still going to brunch", points: 10 },
+      { text: "I live here, still going to the beach club", points: 10 },
       { text: "Local UAE sources", points: 8 },
       { text: "CNN told me everyone's fleeing", points: 1 },
       { text: "A viral thread with 50k likes", points: -3 },
@@ -100,7 +100,7 @@ const getResult = (percentage, isAmerican) => {
   } else {
     return {
       title: "Certified Bullshitter",
-      message: "Bro you're literally just making shit up",
+      message: "Ser you're literally just making shit up",
       emoji: "💩",
       scoreDisplay: `${percentage}%`,
       passed: false
@@ -172,12 +172,16 @@ export default function DubaiQuiz() {
       if (certificateRef.current) {
         const canvas = await html2canvas(certificateRef.current, {
           backgroundColor: '#F5EBD7',
-          scale: 2,
+          scale: 1,
+          width: 1080,
+          height: 1350,
+          windowWidth: 1080,
+          windowHeight: 1350,
         });
 
         const link = document.createElement('a');
         link.download = 'dubai-opinionist-results.jpg';
-        link.href = canvas.toDataURL('image/jpeg', 0.9);
+        link.href = canvas.toDataURL('image/jpeg', 0.92);
         link.click();
       }
     } catch (error) {
@@ -744,7 +748,6 @@ export default function DubaiQuiz() {
           <div className="max-w-xl xl:max-w-[600px] 2xl:max-w-[700px] w-full" style={{ marginTop: '24px' }}>
             {/* Certificate */}
             <div
-              ref={certificateRef}
               className="cert-card"
               style={{
                 backgroundColor: '#F5EBD7',
@@ -811,20 +814,6 @@ export default function DubaiQuiz() {
               >
                 {result.scoreDisplay}
               </p>
-
-              {isAmerican && (
-                <p
-                  className="font-space"
-                  style={{
-                    color: '#2A1810',
-                    fontSize: '20px',
-                    fontWeight: 700,
-                    marginBottom: '16px',
-                  }}
-                >
-                  0%
-                </p>
-              )}
 
               <p className="cert-emoji" style={{ fontSize: '40px', marginTop: '-8px', marginBottom: '12px' }}>
                 {result.emoji}
@@ -967,6 +956,199 @@ export default function DubaiQuiz() {
               </button>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Hidden off-screen div for certificate download — fixed 1080x1350 portrait, all absolute positioning */}
+      {currentSection === 'results' && (
+        <div
+          ref={certificateRef}
+          style={{
+            position: 'absolute',
+            left: '-9999px',
+            top: 0,
+            width: '1080px',
+            height: '1350px',
+            backgroundColor: '#F5EBD7',
+            border: '10px solid #D4AF37',
+            boxSizing: 'border-box',
+            overflow: 'hidden',
+          }}
+        >
+          {/* CERTIFICATE label — y=100 */}
+          <p style={{
+            position: 'absolute',
+            top: '100px',
+            left: 0,
+            width: '100%',
+            textAlign: 'center',
+            color: '#2A1810',
+            fontSize: '28px',
+            fontWeight: 700,
+            letterSpacing: '0.25em',
+            fontFamily: "'Space Mono', monospace",
+            margin: 0,
+          }}>
+            CERTIFICATE
+          </p>
+
+          {/* Certificate title — y=165 */}
+          <h2 style={{
+            position: 'absolute',
+            top: '165px',
+            left: '40px',
+            right: '40px',
+            textAlign: 'center',
+            color: '#1A0F08',
+            fontSize: '58px',
+            letterSpacing: '-0.01em',
+            textTransform: 'uppercase',
+            lineHeight: 1.1,
+            fontFamily: "'Archivo Black', sans-serif",
+            margin: 0,
+          }}>
+            {certificateTitle}
+          </h2>
+
+          {/* SCORE ACHIEVED label — y=320 */}
+          <p style={{
+            position: 'absolute',
+            top: '320px',
+            left: 0,
+            width: '100%',
+            textAlign: 'center',
+            color: '#2A1810',
+            fontSize: '22px',
+            fontWeight: 700,
+            letterSpacing: '0.15em',
+            fontFamily: "'Space Mono', monospace",
+            margin: 0,
+          }}>
+            SCORE ACHIEVED
+          </p>
+
+          {/* Score display — y=330 */}
+          <p style={{
+            position: 'absolute',
+            top: '330px',
+            left: 0,
+            width: '100%',
+            textAlign: 'center',
+            color: '#1A0F08',
+            fontSize: '160px',
+            lineHeight: 1,
+            fontFamily: "'Archivo Black', sans-serif",
+            margin: 0,
+          }}>
+            {result.scoreDisplay}
+          </p>
+
+          {/* Emoji — y=565 */}
+          <p style={{
+            position: 'absolute',
+            top: '565px',
+            left: 0,
+            width: '100%',
+            textAlign: 'center',
+            fontSize: '100px',
+            lineHeight: 1,
+            margin: 0,
+          }}>
+            {result.emoji}
+          </p>
+
+          {/* RATING label — y=740 */}
+          <p style={{
+            position: 'absolute',
+            top: '740px',
+            left: 0,
+            width: '100%',
+            textAlign: 'center',
+            color: '#2A1810',
+            fontSize: '22px',
+            fontWeight: 700,
+            letterSpacing: '0.15em',
+            fontFamily: "'Space Mono', monospace",
+            margin: 0,
+          }}>
+            RATING
+          </p>
+
+          {/* Rating title — y=775 */}
+          <h3 style={{
+            position: 'absolute',
+            top: '775px',
+            left: '50px',
+            right: '50px',
+            textAlign: 'center',
+            color: '#1A0F08',
+            fontSize: '80px',
+            textTransform: 'uppercase',
+            lineHeight: 0.95,
+            fontFamily: "'Archivo Black', sans-serif",
+            margin: 0,
+          }}>
+            {result.title}
+          </h3>
+
+          {/* Message — y=980 */}
+          <p style={{
+            position: 'absolute',
+            top: '980px',
+            left: '60px',
+            right: '60px',
+            textAlign: 'center',
+            color: '#2A1810',
+            fontSize: '26px',
+            fontWeight: 700,
+            fontFamily: "'Space Mono', monospace",
+            margin: 0,
+            lineHeight: 1.3,
+          }}>
+            {result.message}
+          </p>
+
+          {/* Divider line — y=1075 */}
+          <div style={{
+            position: 'absolute',
+            top: '1075px',
+            left: '80px',
+            right: '80px',
+            height: '3px',
+            backgroundColor: '#2A1810',
+          }} />
+
+          {/* Issued date — y=1115 */}
+          <p style={{
+            position: 'absolute',
+            top: '1115px',
+            left: 0,
+            width: '100%',
+            textAlign: 'center',
+            color: '#2A1810',
+            fontSize: '18px',
+            fontWeight: 700,
+            letterSpacing: '0.1em',
+            fontFamily: "'Space Mono', monospace",
+            margin: 0,
+          }}>
+            ISSUED {today} · DUBAI, UAE
+          </p>
+
+          {/* Branding — y=1190 */}
+          <p style={{
+            position: 'absolute',
+            top: '1190px',
+            left: 0,
+            width: '100%',
+            textAlign: 'center',
+            color: '#1A0F08',
+            fontSize: '32px',
+            fontFamily: "'Archivo Black', sans-serif",
+            margin: 0,
+          }}>
+            iknowdubai.lol
+          </p>
         </div>
       )}
     </>
