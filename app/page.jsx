@@ -264,6 +264,12 @@ export default function DubaiQuiz() {
             )`,
           }}
         >
+          {/* Gold accent bar */}
+          <div
+            className="absolute top-0 left-0 w-full"
+            style={{ height: '6px', backgroundColor: '#D4AF37' }}
+          />
+
           {/* Logo */}
           <div className="absolute top-6 left-0 w-full flex justify-center" style={{ zIndex: 20 }}>
             <Logo />
@@ -357,25 +363,10 @@ export default function DubaiQuiz() {
             </g>
           </svg>
 
-          {/* Geometric Sun - high up, centered */}
-          <div
-            className="absolute"
-            style={{
-              top: '15%',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              width: 'clamp(100px, 15vw, 160px)',
-              height: 'clamp(100px, 15vw, 160px)',
-              borderRadius: '50%',
-              background: 'radial-gradient(circle, #F7A834 0%, #E88B2E 50%, #D4752A 100%)',
-              opacity: 0.7,
-            }}
-          />
-
           {/* Main Content */}
           <div className="relative z-10 flex flex-col items-center">
             <h1
-              className="font-archivo text-center mb-6"
+              className="font-archivo text-center mb-3 sm:mb-6"
               style={{
                 color: '#1A0F08',
                 fontSize: 'clamp(2rem, 8vw, 5.5rem)',
@@ -391,7 +382,7 @@ export default function DubaiQuiz() {
             </h1>
 
             <p
-              className="font-space text-center mb-10"
+              className="font-space text-center mb-5 sm:mb-10"
               style={{
                 color: '#2A1810',
                 fontSize: 'clamp(1rem, 2.8vw, 1.4rem)',
@@ -432,6 +423,9 @@ export default function DubaiQuiz() {
                 fontSize: '13px',
                 fontWeight: 700,
                 letterSpacing: '0.06em',
+                background: 'rgba(245, 235, 215, 0.8)',
+                padding: '4px 12px',
+                borderRadius: '2px',
               }}
             >
               ⏱ 3 MIN · HONESTY REQUIRED
@@ -444,7 +438,7 @@ export default function DubaiQuiz() {
       {/* QUIZ SECTION */}
       {currentSection === 'quiz' && (
         <div
-          className="min-h-screen flex flex-col items-center justify-start sm:justify-center px-6 pt-[60px] sm:pt-12 pb-6 sm:pb-12 relative"
+          className="min-h-screen flex flex-col items-center justify-start sm:justify-center px-6 pt-[85px] sm:pt-12 pb-6 sm:pb-12 relative"
           style={{
             background: `linear-gradient(180deg,
               #F5EBD7 0%,
@@ -466,7 +460,7 @@ export default function DubaiQuiz() {
 
           <div className="max-w-xl w-full">
             {/* Progress dots */}
-            <div className="flex justify-center gap-3 mb-8">
+            <div className="flex justify-center gap-3 mb-4 sm:mb-8">
               {questions.map((_, index) => (
                 <div
                   key={index}
@@ -489,11 +483,11 @@ export default function DubaiQuiz() {
               style={{
                 backgroundColor: '#F5EBD7',
                 border: '4px solid #2A1810',
-                padding: '32px 28px',
+                padding: '20px 18px',
               }}
             >
               <p
-                className="font-space mb-4"
+                className="font-space mb-2"
                 style={{
                   color: '#2A1810',
                   fontSize: '12px',
@@ -505,7 +499,7 @@ export default function DubaiQuiz() {
               </p>
 
               <h3
-                className="font-archivo mb-8"
+                className="font-archivo mb-4"
                 style={{
                   color: '#1A0F08',
                   fontSize: 'clamp(1.2rem, 4vw, 1.6rem)',
@@ -516,7 +510,7 @@ export default function DubaiQuiz() {
                 {currentQ.question}
               </h3>
 
-              <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-2">
                 {currentQ.options.map((option, optIndex) => {
                   const isSelected = answers[currentQ.id]?.optionIndex === optIndex;
                   const isHovered = hoveredOption === `${currentQ.id}-${optIndex}`;
@@ -531,8 +525,8 @@ export default function DubaiQuiz() {
                       style={{
                         backgroundColor: isSelected ? '#7CB3BD' : isHovered ? '#D9C4A8' : 'transparent',
                         color: '#1A0F08',
-                        padding: '12px 16px',
-                        fontSize: '14px',
+                        padding: '10px 14px',
+                        fontSize: '13px',
                         fontWeight: 700,
                         border: '3px solid #2A1810',
                         borderRadius: 0,
@@ -550,7 +544,7 @@ export default function DubaiQuiz() {
             </div>
 
             {/* Navigation */}
-            <div className="flex justify-between mt-6">
+            <div className="flex justify-between mt-4">
               {/* Back button - only show from question 2 onwards */}
               {currentQuestion > 0 ? (
                 <button
@@ -640,7 +634,7 @@ export default function DubaiQuiz() {
       {/* RESULTS SECTION */}
       {currentSection === 'results' && (
         <div
-          className="min-h-screen flex flex-col items-center justify-center px-6 pt-14 pb-6"
+          className="min-h-screen flex flex-col items-center justify-start sm:justify-center px-6 pt-[50px] sm:pt-14 pb-3 sm:pb-6"
           style={{
             background: `linear-gradient(180deg,
               #F5EBD7 0%,
@@ -660,14 +654,14 @@ export default function DubaiQuiz() {
             <Logo />
           </div>
 
-          <div className="max-w-xl w-full">
+          <div className="max-w-xl w-full" style={{ marginTop: '24px' }}>
             {/* Certificate */}
             <div
               ref={certificateRef}
               style={{
                 backgroundColor: '#F5EBD7',
-                border: '6px solid #2A1810',
-                padding: '28px 24px',
+                border: '4px solid #2A1810',
+                padding: '24px 20px',
                 textAlign: 'center',
                 maxWidth: '1000px',
                 width: '100%',
@@ -684,20 +678,11 @@ export default function DubaiQuiz() {
                   fontSize: '12px',
                   fontWeight: 700,
                   letterSpacing: '0.2em',
-                  marginBottom: '8px',
+                  marginBottom: '16px',
                 }}
               >
                 CERTIFICATE
               </p>
-
-              <div
-                style={{
-                  width: '140px',
-                  height: '2px',
-                  backgroundColor: '#D4AF37',
-                  marginBottom: '16px',
-                }}
-              />
 
               <h2
                 className="font-archivo"
@@ -730,7 +715,7 @@ export default function DubaiQuiz() {
                 className="font-archivo"
                 style={{
                   color: '#1A0F08',
-                  fontSize: 'clamp(3rem, 10vw, 5rem)',
+                  fontSize: 'clamp(2.5rem, 8vw, 5rem)',
                   lineHeight: 1,
                   marginTop: '-10px',
                   marginBottom: '20px',
@@ -753,7 +738,7 @@ export default function DubaiQuiz() {
                 </p>
               )}
 
-              <p style={{ fontSize: '48px', marginTop: '-10px', marginBottom: '16px' }}>
+              <p style={{ fontSize: '40px', marginTop: '-8px', marginBottom: '12px' }}>
                 {result.emoji}
               </p>
 
@@ -774,11 +759,11 @@ export default function DubaiQuiz() {
                 className="font-archivo"
                 style={{
                   color: '#1A0F08',
-                  fontSize: 'clamp(1.8rem, 6vw, 3rem)',
+                  fontSize: 'clamp(1.5rem, 5vw, 3rem)',
                   textTransform: 'uppercase',
                   lineHeight: 0.95,
                   marginTop: '-8px',
-                  marginBottom: '16px',
+                  marginBottom: '12px',
                 }}
               >
                 {result.title}
@@ -788,7 +773,7 @@ export default function DubaiQuiz() {
                 className="font-space"
                 style={{
                   color: '#2A1810',
-                  fontSize: '14px',
+                  fontSize: '13px',
                   fontWeight: 700,
                   marginBottom: '20px',
                 }}
@@ -801,7 +786,7 @@ export default function DubaiQuiz() {
                   width: '100%',
                   height: '2px',
                   backgroundColor: '#2A1810',
-                  margin: '0 auto 16px',
+                  margin: '0 auto 12px',
                 }}
               />
 
@@ -819,7 +804,7 @@ export default function DubaiQuiz() {
             </div>
 
             {/* Buttons */}
-            <div className="flex flex-col gap-3 mt-4">
+            <div className="flex flex-col gap-2 mt-3">
               <button
                 onMouseEnter={() => setHoveredButton('download')}
                 onMouseLeave={() => setHoveredButton(null)}
@@ -829,12 +814,12 @@ export default function DubaiQuiz() {
                 style={{
                   backgroundColor: '#7CB3BD',
                   color: '#1A0F08',
-                  padding: '14px 40px',
-                  fontSize: '14px',
+                  padding: '12px 32px',
+                  fontSize: '13px',
                   fontWeight: 700,
                   letterSpacing: '0.1em',
                   textTransform: 'uppercase',
-                  border: '4px solid #2A1810',
+                  border: '3px solid #2A1810',
                   borderRadius: 0,
                   cursor: isDownloading ? 'wait' : 'pointer',
                   transform: hoveredButton === 'download' && !isDownloading ? 'translate(-4px, -4px)' : 'translate(0, 0)',
@@ -853,12 +838,12 @@ export default function DubaiQuiz() {
                 style={{
                   backgroundColor: '#1A0F08',
                   color: '#F5EBD7',
-                  padding: '14px 40px',
-                  fontSize: '14px',
+                  padding: '12px 32px',
+                  fontSize: '13px',
                   fontWeight: 700,
                   letterSpacing: '0.1em',
                   textTransform: 'uppercase',
-                  border: '4px solid #2A1810',
+                  border: '3px solid #2A1810',
                   borderRadius: 0,
                   cursor: 'pointer',
                   transform: hoveredButton === 'share' ? 'translate(-4px, -4px)' : 'translate(0, 0)',
@@ -877,12 +862,12 @@ export default function DubaiQuiz() {
                 style={{
                   backgroundColor: 'transparent',
                   color: '#1A0F08',
-                  padding: '14px 40px',
-                  fontSize: '14px',
+                  padding: '12px 32px',
+                  fontSize: '13px',
                   fontWeight: 700,
                   letterSpacing: '0.1em',
                   textTransform: 'uppercase',
-                  border: '4px solid #2A1810',
+                  border: '3px solid #2A1810',
                   borderRadius: 0,
                   cursor: 'pointer',
                   transform: hoveredButton === 'retake' ? 'translate(-4px, -4px)' : 'translate(0, 0)',
