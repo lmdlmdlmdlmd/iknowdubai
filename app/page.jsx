@@ -223,7 +223,7 @@ export default function DubaiQuiz() {
     <a
       href="/"
       onClick={(e) => { e.preventDefault(); resetQuiz(); }}
-      className="font-archivo"
+      className="font-archivo logo-text"
       style={{
         color: '#1A0F08',
         fontSize: '18px',
@@ -247,6 +247,92 @@ export default function DubaiQuiz() {
 
         .font-space {
           font-family: 'Space Mono', monospace;
+        }
+
+        /* Large desktop scaling — xl (1280px+) */
+        @media (min-width: 1280px) {
+          .logo-text { font-size: 20px !important; }
+          .hero-subtitle { font-size: clamp(1rem, 2.8vw, 1.6rem) !important; }
+          .hero-btn {
+            font-size: 16px !important;
+            padding: 22px 60px !important;
+          }
+          .hero-timer { font-size: 14px !important; }
+          .quiz-card {
+            padding: 28px 26px !important;
+            border-width: 5px !important;
+          }
+          .quiz-label { font-size: 14px !important; }
+          .quiz-question { font-size: 1.9rem !important; }
+          .quiz-option {
+            font-size: 15px !important;
+            padding: 14px 18px !important;
+          }
+          .quiz-nav-btn {
+            font-size: 15px !important;
+            padding: 18px 36px !important;
+          }
+          .cert-card {
+            padding: 32px 28px !important;
+            border-width: 5px !important;
+          }
+          .cert-label { font-size: 14px !important; }
+          .cert-sublabel { font-size: 12px !important; }
+          .cert-title { font-size: 2.2rem !important; }
+          .cert-score { font-size: 5.5rem !important; }
+          .cert-emoji { font-size: 48px !important; }
+          .cert-rating { font-size: 3.5rem !important; }
+          .cert-message { font-size: 15px !important; }
+          .cert-date { font-size: 12px !important; }
+          .result-btn {
+            font-size: 14px !important;
+            padding: 16px 40px !important;
+            border-width: 4px !important;
+          }
+        }
+
+        /* Ultra-wide scaling — 2xl (1536px+) */
+        @media (min-width: 1536px) {
+          .logo-text { font-size: 22px !important; }
+          .hero-subtitle { font-size: clamp(1rem, 2.8vw, 1.8rem) !important; }
+          .hero-btn {
+            font-size: 17px !important;
+            padding: 24px 68px !important;
+            border-width: 5px !important;
+          }
+          .hero-timer { font-size: 15px !important; }
+          .quiz-card {
+            padding: 36px 32px !important;
+            border-width: 6px !important;
+          }
+          .quiz-label { font-size: 15px !important; }
+          .quiz-question { font-size: 2.1rem !important; }
+          .quiz-option {
+            font-size: 16px !important;
+            padding: 16px 22px !important;
+            border-width: 4px !important;
+          }
+          .quiz-nav-btn {
+            font-size: 16px !important;
+            padding: 20px 44px !important;
+            border-width: 4px !important;
+          }
+          .cert-card {
+            padding: 40px 36px !important;
+            border-width: 6px !important;
+          }
+          .cert-label { font-size: 15px !important; }
+          .cert-sublabel { font-size: 14px !important; }
+          .cert-title { font-size: 2.5rem !important; }
+          .cert-score { font-size: 6rem !important; }
+          .cert-emoji { font-size: 56px !important; }
+          .cert-rating { font-size: 4rem !important; }
+          .cert-message { font-size: 16px !important; }
+          .cert-date { font-size: 13px !important; }
+          .result-btn {
+            font-size: 15px !important;
+            padding: 18px 48px !important;
+          }
         }
       `}</style>
 
@@ -382,7 +468,7 @@ export default function DubaiQuiz() {
             </h1>
 
             <p
-              className="font-space text-center mb-5 sm:mb-10"
+              className="font-space text-center mb-5 sm:mb-10 hero-subtitle"
               style={{
                 color: '#2A1810',
                 fontSize: 'clamp(1rem, 2.8vw, 1.4rem)',
@@ -396,7 +482,7 @@ export default function DubaiQuiz() {
               onMouseEnter={() => setHoveredButton('start')}
               onMouseLeave={() => setHoveredButton(null)}
               onClick={() => { posthog.capture('quiz_started'); setCurrentSection('quiz'); }}
-              className="font-space mb-5"
+              className="font-space mb-5 hero-btn"
               style={{
                 backgroundColor: '#7CB3BD',
                 color: '#1A0F08',
@@ -417,7 +503,7 @@ export default function DubaiQuiz() {
             </button>
 
             <p
-              className="font-space"
+              className="font-space hero-timer"
               style={{
                 color: '#2A1810',
                 fontSize: '13px',
@@ -458,7 +544,7 @@ export default function DubaiQuiz() {
             <Logo />
           </div>
 
-          <div className="max-w-xl w-full">
+          <div className="max-w-xl xl:max-w-[600px] 2xl:max-w-[700px] w-full">
             {/* Progress dots */}
             <div className="flex justify-center gap-3 mb-4 sm:mb-8">
               {questions.map((_, index) => (
@@ -480,6 +566,7 @@ export default function DubaiQuiz() {
 
             {/* Question Card */}
             <div
+              className="quiz-card"
               style={{
                 backgroundColor: '#F5EBD7',
                 border: '4px solid #2A1810',
@@ -487,7 +574,7 @@ export default function DubaiQuiz() {
               }}
             >
               <p
-                className="font-space mb-2"
+                className="font-space mb-2 quiz-label"
                 style={{
                   color: '#2A1810',
                   fontSize: '12px',
@@ -499,7 +586,7 @@ export default function DubaiQuiz() {
               </p>
 
               <h3
-                className="font-archivo mb-4"
+                className="font-archivo mb-4 quiz-question"
                 style={{
                   color: '#1A0F08',
                   fontSize: 'clamp(1.2rem, 4vw, 1.6rem)',
@@ -510,7 +597,7 @@ export default function DubaiQuiz() {
                 {currentQ.question}
               </h3>
 
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-2 xl:gap-3">
                 {currentQ.options.map((option, optIndex) => {
                   const isSelected = answers[currentQ.id]?.optionIndex === optIndex;
                   const isHovered = hoveredOption === `${currentQ.id}-${optIndex}`;
@@ -521,7 +608,7 @@ export default function DubaiQuiz() {
                       onClick={() => handleAnswer(currentQ.id, option.points, optIndex, option.isAmerican)}
                       onMouseEnter={() => setHoveredOption(`${currentQ.id}-${optIndex}`)}
                       onMouseLeave={() => setHoveredOption(null)}
-                      className="font-space text-left"
+                      className="font-space text-left quiz-option"
                       style={{
                         backgroundColor: isSelected ? '#7CB3BD' : isHovered ? '#D9C4A8' : 'transparent',
                         color: '#1A0F08',
@@ -544,14 +631,14 @@ export default function DubaiQuiz() {
             </div>
 
             {/* Navigation */}
-            <div className="flex justify-between mt-4">
+            <div className="flex justify-between mt-4 xl:mt-6">
               {/* Back button - only show from question 2 onwards */}
               {currentQuestion > 0 ? (
                 <button
                   onMouseEnter={() => setHoveredButton('back')}
                   onMouseLeave={() => setHoveredButton(null)}
                   onClick={goBack}
-                  className="font-space"
+                  className="font-space quiz-nav-btn"
                   style={{
                     backgroundColor: 'transparent',
                     color: '#1A0F08',
@@ -580,7 +667,7 @@ export default function DubaiQuiz() {
                   onMouseEnter={() => setHoveredButton('results')}
                   onMouseLeave={() => setHoveredButton(null)}
                   onClick={calculateScore}
-                  className="font-space"
+                  className="font-space quiz-nav-btn"
                   style={{
                     backgroundColor: '#D4AF37',
                     color: '#1A0F08',
@@ -605,7 +692,7 @@ export default function DubaiQuiz() {
                   onMouseLeave={() => setHoveredButton(null)}
                   onClick={goNext}
                   disabled={!currentAnswered}
-                  className="font-space"
+                  className="font-space quiz-nav-btn"
                   style={{
                     backgroundColor: currentAnswered ? '#7CB3BD' : '#CCCCCC',
                     color: currentAnswered ? '#1A0F08' : '#888888',
@@ -654,10 +741,11 @@ export default function DubaiQuiz() {
             <Logo />
           </div>
 
-          <div className="max-w-xl w-full" style={{ marginTop: '24px' }}>
+          <div className="max-w-xl xl:max-w-[600px] 2xl:max-w-[700px] w-full" style={{ marginTop: '24px' }}>
             {/* Certificate */}
             <div
               ref={certificateRef}
+              className="cert-card"
               style={{
                 backgroundColor: '#F5EBD7',
                 border: '4px solid #2A1810',
@@ -672,7 +760,7 @@ export default function DubaiQuiz() {
               }}
             >
               <p
-                className="font-space"
+                className="font-space cert-label"
                 style={{
                   color: '#2A1810',
                   fontSize: '12px',
@@ -685,7 +773,7 @@ export default function DubaiQuiz() {
               </p>
 
               <h2
-                className="font-archivo"
+                className="font-archivo cert-title"
                 style={{
                   color: '#1A0F08',
                   fontSize: 'clamp(1.2rem, 4vw, 1.8rem)',
@@ -699,7 +787,7 @@ export default function DubaiQuiz() {
               </h2>
 
               <p
-                className="font-space"
+                className="font-space cert-sublabel"
                 style={{
                   color: '#2A1810',
                   fontSize: '11px',
@@ -712,7 +800,7 @@ export default function DubaiQuiz() {
               </p>
 
               <p
-                className="font-archivo"
+                className="font-archivo cert-score"
                 style={{
                   color: '#1A0F08',
                   fontSize: 'clamp(2.5rem, 8vw, 5rem)',
@@ -738,12 +826,12 @@ export default function DubaiQuiz() {
                 </p>
               )}
 
-              <p style={{ fontSize: '40px', marginTop: '-8px', marginBottom: '12px' }}>
+              <p className="cert-emoji" style={{ fontSize: '40px', marginTop: '-8px', marginBottom: '12px' }}>
                 {result.emoji}
               </p>
 
               <p
-                className="font-space"
+                className="font-space cert-sublabel"
                 style={{
                   color: '#2A1810',
                   fontSize: '11px',
@@ -756,7 +844,7 @@ export default function DubaiQuiz() {
               </p>
 
               <h3
-                className="font-archivo"
+                className="font-archivo cert-rating"
                 style={{
                   color: '#1A0F08',
                   fontSize: 'clamp(1.5rem, 5vw, 3rem)',
@@ -770,7 +858,7 @@ export default function DubaiQuiz() {
               </h3>
 
               <p
-                className="font-space"
+                className="font-space cert-message"
                 style={{
                   color: '#2A1810',
                   fontSize: '13px',
@@ -791,7 +879,7 @@ export default function DubaiQuiz() {
               />
 
               <p
-                className="font-space"
+                className="font-space cert-date"
                 style={{
                   color: '#2A1810',
                   fontSize: '10px',
@@ -804,13 +892,13 @@ export default function DubaiQuiz() {
             </div>
 
             {/* Buttons */}
-            <div className="flex flex-col gap-2 mt-3">
+            <div className="flex flex-col gap-2 xl:gap-3 mt-3 xl:mt-5">
               <button
                 onMouseEnter={() => setHoveredButton('download')}
                 onMouseLeave={() => setHoveredButton(null)}
                 onClick={downloadCertificate}
                 disabled={isDownloading}
-                className="font-space w-full"
+                className="font-space w-full result-btn"
                 style={{
                   backgroundColor: '#7CB3BD',
                   color: '#1A0F08',
@@ -834,7 +922,7 @@ export default function DubaiQuiz() {
                 onMouseEnter={() => setHoveredButton('share')}
                 onMouseLeave={() => setHoveredButton(null)}
                 onClick={shareOnX}
-                className="font-space w-full"
+                className="font-space w-full result-btn"
                 style={{
                   backgroundColor: '#1A0F08',
                   color: '#F5EBD7',
@@ -858,7 +946,7 @@ export default function DubaiQuiz() {
                 onMouseEnter={() => setHoveredButton('retake')}
                 onMouseLeave={() => setHoveredButton(null)}
                 onClick={resetQuiz}
-                className="font-space w-full"
+                className="font-space w-full result-btn"
                 style={{
                   backgroundColor: 'transparent',
                   color: '#1A0F08',
