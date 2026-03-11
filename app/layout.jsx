@@ -2,7 +2,7 @@ import "./globals.css";
 import PostHogProvider from "./posthog-provider";
 
 export const metadata = {
-  title: "The Dubai Opinionist Test | Are You Qualified?",
+  title: "iknowdubai.lol",
   description:
     "Find out if you're actually qualified to have an opinion about Dubai. Take the test and prove it.",
   metadataBase: new URL("https://www.iknowdubai.lol"),
