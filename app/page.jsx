@@ -453,6 +453,22 @@ export default function DubaiQuiz() {
             </g>
           </svg>
 
+          {/* Satire Disclaimer */}
+          <div
+            className="absolute bottom-0 left-0 w-full font-space"
+            style={{
+              fontSize: '11px',
+              color: '#F5EBD7',
+              opacity: 0.8,
+              textAlign: 'center',
+              padding: '6px 24px 8px',
+              lineHeight: 1.4,
+              zIndex: 5,
+            }}
+          >
+            This is satire. For entertainment purposes only. Your results mean nothing. Please don't take this seriously.
+          </div>
+
           {/* Main Content */}
           <div className="relative z-10 flex flex-col items-center">
             <h1
