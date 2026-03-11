@@ -453,23 +453,6 @@ export default function DubaiQuiz() {
             </g>
           </svg>
 
-          {/* Satire Disclaimer — solid brown bar below buildings */}
-          <div
-            className="absolute bottom-0 left-0 w-full font-space"
-            style={{
-              backgroundColor: 'rgba(42, 24, 16, 0.95)',
-              fontSize: '11px',
-              color: '#F5EBD7',
-              opacity: 0.85,
-              textAlign: 'center',
-              padding: '8px 20px 10px',
-              lineHeight: 1.45,
-              zIndex: 5,
-            }}
-          >
-            This is satire. For entertainment purposes only. Your results mean nothing. Please don't take this seriously.
-          </div>
-
           {/* Main Content */}
           <div className="relative z-10 flex flex-col items-center">
             <h1
