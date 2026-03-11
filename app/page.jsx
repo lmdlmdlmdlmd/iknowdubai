@@ -955,6 +955,20 @@ export default function DubaiQuiz() {
                 RETAKE TEST
               </button>
             </div>
+
+            {/* Satire Disclaimer */}
+            <p
+              className="font-space"
+              style={{
+                fontSize: '11px',
+                color: '#8B7355',
+                textAlign: 'center',
+                padding: '24px 16px 16px',
+                lineHeight: 1.5,
+              }}
+            >
+              This is satire. For entertainment purposes only. Your results mean nothing. Please don't take this seriously.
+            </p>
           </div>
         </div>
       )}
