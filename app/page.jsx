@@ -20,7 +20,7 @@ const questions = [
     id: 2,
     question: "Where do you get your Dubai news?",
     options: [
-      { text: "I live here, still going to the beach club", points: 10 },
+      { text: "I'm literally here, I see it firsthand", points: 10 },
       { text: "Local UAE sources", points: 8 },
       { text: "CNN told me everyone's fleeing", points: 1 },
       { text: "A viral thread with 50k likes", points: -3 },
@@ -53,7 +53,7 @@ const questions = [
     id: 5,
     question: "How do you feel about residents saying it's safe?",
     options: [
-      { text: "I trust them, they're literally there", points: 10 },
+      { text: "I'm one of them, it IS safe", points: 10 },
       { text: "They probably know better than me", points: 7 },
       { text: "They're coping/in denial", points: -3 },
       { text: "Doesn't matter, I saw a scary headline", points: -7 },
