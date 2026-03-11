@@ -5,18 +5,18 @@ export const metadata = {
   title: "The Dubai Opinionist Test | Are You Qualified?",
   description:
     "Find out if you're actually qualified to have an opinion about Dubai. Take the test and prove it.",
-  metadataBase: new URL("https://iknowdubai.lol"),
+  metadataBase: new URL("https://www.iknowdubai.lol"),
   openGraph: {
     title: "The Dubai Opinionist Test",
     description:
       "Are you qualified to have an opinion about Dubai? Take the test.",
-    url: "https://iknowdubai.lol",
+    url: "https://www.iknowdubai.lol",
     siteName: "I Know Dubai",
     locale: "en_US",
     type: "website",
     images: [
       {
-        url: "/og-image.png",
+        url: "https://www.iknowdubai.lol/og-image.png",
         width: 1200,
         height: 630,
         alt: "The Dubai Opinionist Test",
@@ -28,7 +28,7 @@ export const metadata = {
     title: "The Dubai Opinionist Test",
     description:
       "Are you qualified to have an opinion about Dubai? Take the test.",
-    images: ["/og-image.png"],
+    images: ["https://www.iknowdubai.lol/og-image.png"],
   },
 };
 
