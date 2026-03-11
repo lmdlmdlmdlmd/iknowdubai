@@ -2,30 +2,7 @@
 
 import { useState, useEffect } from 'react';
 
-// TODO: Replace with PostHog API fetch
-// Endpoint: POST https://eu.i.posthog.com/api/projects/{PROJECT_ID}/insights/
-// Use posthog-node or fetch with personal API key (server-side via Next.js API route)
-// Events to query: quiz_completed, certificate_downloaded, shared_on_x
-const stats = {
-  totalQuizzes: 1247,
-  distribution: {
-    earned: 89,
-    qualified: 312,
-    wrong: 445,
-    bullshitter: 287,
-    american: 114,
-  },
-  averageScore: 42,
-  certificatesDownloaded: 634,
-  sharedOnX: 218,
-  topCountries: [
-    { flag: '🇦🇪', name: 'UAE', count: 389 },
-    { flag: '🇺🇸', name: 'United States', count: 276 },
-    { flag: '🇬🇧', name: 'United Kingdom', count: 198 },
-    { flag: '🇮🇳', name: 'India', count: 142 },
-    { flag: '🇩🇪', name: 'Germany', count: 87 },
-  ],
-};
+// Data fetched from /api/stats (PostHog HogQL queries, server-side)
 
 const tiers = [
   { key: 'earned', emoji: '🏆', label: 'Earned Your Opinion', color: '#D4AF37' },
@@ -40,6 +17,9 @@ export default function StatsPage() {
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [hoveredButton, setHoveredButton] = useState(null);
   const [mounted, setMounted] = useState(false);
+  const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     setMounted(true);
@@ -47,6 +27,26 @@ export default function StatsPage() {
       setIsUnlocked(true);
     }
   }, []);
+
+  // Fetch stats from API after unlock
+  useEffect(() => {
+    if (!isUnlocked) return;
+    setLoading(true);
+    fetch('/api/stats')
+      .then(res => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
+      .then(data => {
+        if (data.error) throw new Error(data.error);
+        setStats(data);
+      })
+      .catch(err => {
+        console.error('Failed to fetch stats:', err);
+        setError('Failed to load stats. Try refreshing.');
+      })
+      .finally(() => setLoading(false));
+  }, [isUnlocked]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -56,7 +56,7 @@ export default function StatsPage() {
     }
   };
 
-  const maxCount = Math.max(...Object.values(stats.distribution));
+  const maxCount = stats ? Math.max(...Object.values(stats.distribution)) : 0;
 
   // Don't render until mounted to avoid hydration mismatch with localStorage
   if (!mounted) return null;
@@ -69,6 +69,10 @@ export default function StatsPage() {
         }
         .font-space {
           font-family: 'Space Mono', monospace;
+        }
+        @keyframes pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.4; }
         }
       `}</style>
 
@@ -196,8 +200,49 @@ export default function StatsPage() {
           </div>
         )}
 
+        {/* Loading State */}
+        {isUnlocked && loading && (
+          <div className="max-w-xl w-full flex flex-col items-center gap-4" style={{ marginTop: '60px' }}>
+            <div style={{
+              backgroundColor: '#F5EBD7',
+              border: '4px solid #2A1810',
+              padding: '40px 20px',
+              textAlign: 'center',
+              width: '100%',
+            }}>
+              <p className="font-space" style={{
+                color: '#2A1810', fontSize: '12px', fontWeight: 700,
+                letterSpacing: '0.15em', animation: 'pulse 1.5s ease-in-out infinite',
+              }}>
+                CRUNCHING THE NUMBERS...
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Error State */}
+        {isUnlocked && error && !loading && (
+          <div className="max-w-xl w-full flex flex-col items-center gap-4" style={{ marginTop: '60px' }}>
+            <div style={{
+              backgroundColor: '#F5EBD7',
+              border: '4px solid #2A1810',
+              padding: '32px 20px',
+              textAlign: 'center',
+              width: '100%',
+            }}>
+              <p style={{ fontSize: '28px', marginBottom: '8px' }}>😵</p>
+              <p className="font-space" style={{
+                color: '#2A1810', fontSize: '12px', fontWeight: 700,
+                letterSpacing: '0.15em',
+              }}>
+                {error}
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Stats Dashboard */}
-        {isUnlocked && (
+        {isUnlocked && stats && !loading && !error && (
           <div className="max-w-xl w-full flex flex-col gap-4" style={{ marginTop: '60px' }}>
 
             {/* Headline */}
@@ -519,7 +564,7 @@ export default function StatsPage() {
                   marginBottom: '12px',
                 }}
               >
-                LAST UPDATED: {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }).toUpperCase()}
+                LAST UPDATED: {(stats.lastUpdated ? new Date(stats.lastUpdated) : new Date()).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }).toUpperCase()}
               </p>
               <p
                 className="font-archivo"
