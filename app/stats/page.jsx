@@ -7,9 +7,9 @@ import { useState, useEffect } from 'react';
 const tiers = [
   { key: 'earned', emoji: '🏆', label: 'Earned Your Opinion', color: '#D4AF37' },
   { key: 'qualified', emoji: '⚠️', label: 'Qualified-ish', color: '#7CB3BD' },
-  { key: 'wrong', emoji: '🤡', label: 'Confidently Wrong', color: '#DEBB94' },
-  { key: 'bullshitter', emoji: '💩', label: 'Certified Bullshitter', color: '#D9A87E' },
-  { key: 'american', emoji: '🦅', label: 'Americans', color: '#E5CBA8' },
+  { key: 'wrong', emoji: '🤡', label: 'Confidently Wrong', color: '#C4705A' },
+  { key: 'bullshitter', emoji: '💩', label: 'Certified Bullshitter', color: '#9B7B8E' },
+  { key: 'american', emoji: '🦅', label: 'Freedom of speechooor', color: '#8B9A6B' },
 ];
 
 export default function StatsPage() {
